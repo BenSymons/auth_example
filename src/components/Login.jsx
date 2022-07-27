@@ -1,12 +1,14 @@
-import {useState} from "react"
-import axios from "axios"
+import {useState, useContext} from "react"
+import fakeLogin from "../utils/fakeLogin"
+import Header from "./Header"
+import AuthContext from "../utils/authContext"
+import jwtDecode from "jwt-decode"
+import Cookie from "js-cookie"
 
 const Login = () => {
-    const [mode, setMode] = useState("login")
+    const {setUser} = useContext(AuthContext)
     const [details, setDetails] = useState({email: "", password: ""})
-    const handleSwitch = () => {
-        setMode(prev => prev === "login" ? "create" : "login")
-    }
+    const [error, setError] = useState(null)
 
     const handleChange=({target: {value, id}}) => {
         setDetails(prev => ({...prev, [id]: value}))
@@ -14,36 +16,33 @@ const Login = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        console.log(details, "<-- details")
-        axios.post("http://localhost:4000/user", details).then((res) => {
-            console.log(res)
-        })
+        const res = fakeLogin(details)
+        if (res.error) {
+            setError(res.error)
+        } else {
+            const currentUser = jwtDecode(res.token)
+            setError(null)
+            Cookie.set("token", res.token)
+            setUser(currentUser)
+        }
     }
 
     return (
         <div>
+            <Header/>
             <p className="center">Please enter your details below to login</p>
-            <button onClick={handleSwitch} className="center">create new user</button>
             <div className="container">
-                {/* <form>
-                    <label htmlFor="email">Email</label><br />
-                    <input id="email" /><br />
-                    <label htmlFor="password">Password</label><br />
-                    <input id="password" />
-                    <button type="submit">Login</button>
-                </form> */}
-            </div>
-                {mode === "create" && (
-                <div className="container">
                 <form onSubmit={handleSubmit}>
+                    <label htmlFor="username">Username</label><br />
+                    <input id="username" onChange={handleChange}/><br />
                     <label htmlFor="email">Email</label><br />
                     <input id="email" onChange={handleChange}/><br />
                     <label htmlFor="password">Password</label><br />
-                    <input id="password" onChange={handleChange} />
-                    <button type="submit">Create new user</button>
+                    <input id="password" onChange={handleChange}/><br/>
+                    <button type="submit">Login</button>
+                    {error && <p className="error">{error}</p>}
                 </form>
             </div>
-            )}
         </div>
     )
 }
