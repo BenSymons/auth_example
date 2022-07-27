@@ -12,6 +12,9 @@ const Login = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
+        /* Normally the password (in details) would be hashed with bcrypt
+        This example uses hardcoded data without the backend but you must always
+        remember to hash your passwords before sending them to the backend */
         const res = fakeLogin(details)
         if (res.error) {
             setError(res.error)
