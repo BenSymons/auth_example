@@ -21,6 +21,7 @@ const fakeLogin = (details) => {
         },
         process.env.REACT_APP_KEY
         )
+        console.log(token, "<-- token")
         return {token: token}
     } else {
         return {error: "details are incorrect"}

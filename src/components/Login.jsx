@@ -1,8 +1,12 @@
-import {useState} from "react"
+import jwtDecode from "jwt-decode"
+import {useState, useContext} from "react"
+import AuthContext from "../utils/AuthContext"
 import fakeLogin from "../utils/fakeLogin"
 import Header from "./Header"
+import Cookie from "js-cookie"
 
 const Login = () => {
+    const {setUser} = useContext(AuthContext)
     const [details, setDetails] = useState({email: "", password: ""})
     const [error, setError] = useState(null)
 
@@ -19,7 +23,9 @@ const Login = () => {
         if (res.error) {
             setError(res.error)
         } else {
-            console.log("credentials are correct")
+            const currentUser = jwtDecode(res.token)
+            setUser(currentUser)
+            Cookie.set("token", res.token)
         }
     }
 

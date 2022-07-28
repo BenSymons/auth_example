@@ -1,8 +1,16 @@
 import Header from "./Header"
+import { useContext } from "react"
+import AuthContext from "../utils/AuthContext"
+import Cookie from "js-cookie"
+import { useNavigate } from "react-router-dom"
 
 const Account = () => {
+    const navigate = useNavigate()
+    const {setUser} = useContext(AuthContext)
         const handleClick = () => {
-            console.log("logging out")
+            setUser(null)
+            Cookie.remove("token")
+            navigate("/")
         }
     return (
         <div>
